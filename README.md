@@ -22,6 +22,8 @@ This project is for a local AI Assistant solution based on langchain and OpenAI.
   Your browser does not support the video tag.
 </video>
 
+I provided a demo video to show how the AI assistant works in [demo.mp4](images)
+
 ---
 ## **LLM Integration**
 This project primarily uses **OpenAI API** as the LLM provider.  
