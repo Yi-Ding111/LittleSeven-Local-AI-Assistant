@@ -45,7 +45,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: $AWS_REGION
 
   terraform-plan:
     name: "Terraform Plan"
@@ -104,7 +104,7 @@ jobs:
           SUBNET_ID_1=$(terraform output -json private_subnet_ids | jq -r '.[0]')
           SUBNET_ID_2=$(terraform output -json private_subnet_ids | jq -r '.[1]')
           SECURITY_GROUP_ID=$(terraform output -raw eks_cluster_sg_id)
-          NODE_ROLE="${{ env.EKS_NODE_ROLE }}"
+          NODE_ROLE=$EKS_NODE_ROLE
 
           # replace NodeClass file's placeholders
           sed -i "s#__SUBNET_ID_1__#$SUBNET_ID_1#g" ./eks/manifests/nodeclass.yaml
