@@ -116,28 +116,48 @@ jobs:
       - name: Save Terraform Init Data and state config file for apply job
         uses: actions/upload-artifact@v4
         with:
-          name: terraform-artifacts
+          name: state-config-artifacts
           path: |
-            ${{ env.WORK_DIR }}/.terraform/**
             ${{ env.WORK_DIR }}/state.config
-            ${{ env.WORK_DIR }}/.terraform.lock.hcl
 
-  # terraform-apply:
-  #   name: "Terraform Apply Or Destroy"
-  #   runs-on: ubuntu-latest
-  #   needs: terraform-plan
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v3
 
-  #     - name: Apply or Destroy Terraform Changes
-  #       run: |
-  #         cd $WORK_DIR
-  #         if [ "${{ github.event.inputs.runScope }}" == "Destroy" ]; then
-  #           terraform destroy --auto-approve
-  #         else
-  #           terraform apply --auto-approve
-  #         fi
+  terraform-apply:
+    name: "Terraform Apply Or Destroy"
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # download state.config file artifacts
+      - name: Restore Terraform State Config
+        uses: actions/download-artifact@v4
+        with:
+          name: state-config-artifacts
+          path: ${{ env.WORK_DIR }}
+
+      # ensure the config file is downloaded
+      - name: Debug Downloaded State Config
+        run: |
+          echo "Checking downloaded state.config file"
+          ls -l ${{ env.WORK_DIR }}/state.config || echo "File not found!"
+
+      - name: Initialize Terraform
+        run: |
+          cd ${{ env.WORK_DIR }}
+          terraform init -backend-config="./state.config"
+
+      - name: Apply or Destroy Terraform Changes
+        run: |
+          cd ${{ env.WORK_DIR }}
+          if [[ "${{ github.event.inputs.runScope }}" == "Destroy" ]]; then
+            echo "Running terraform destroy..."
+            terraform destroy --auto-approve
+          else
+            echo "Running terraform apply..."
+            terraform apply --auto-approve
+          fi
+
 
   # terraform-output:
   #   name: "Process Terraform Outputs & Update NodeClass"
