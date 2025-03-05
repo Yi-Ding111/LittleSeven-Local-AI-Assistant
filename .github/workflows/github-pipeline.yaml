@@ -106,7 +106,7 @@ jobs:
         with:
           name: terraform-artifacts
           path: |
-            ${{ env.WORK_DIR }}/.terraform/
+            ${{ env.WORK_DIR }}/.terraform/**
             ${{ env.WORK_DIR }}/state.config
             ${{ env.WORK_DIR }}/.terraform.lock.hcl
 
