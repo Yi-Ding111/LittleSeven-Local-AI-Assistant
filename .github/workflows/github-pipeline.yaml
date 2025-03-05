@@ -91,6 +91,15 @@ jobs:
           TF_VAR_region: ${{ vars.REGION }}
 
 
+      - name: Save Terraform Init Data and state config file for apply job
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-artifacts
+          path: |
+            $WORK_DIR/.terraform
+            $WORK_DIR/state.config
+
+
   # terraform-apply:
   #   name: "Terraform Apply Or Destroy"
   #   runs-on: ubuntu-latest
@@ -107,6 +116,8 @@ jobs:
   #         else
   #           terraform apply --auto-approve
   #         fi
+
+
 
 
   # terraform-output:
