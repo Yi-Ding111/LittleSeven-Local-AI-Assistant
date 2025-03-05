@@ -251,7 +251,7 @@ jobs:
           sed -i "s#__EKS_NODE_ROLE__#$NODE_ROLE#g" ./eks/manifests/nodeclass.yaml
 
           echo "NodeClass updated successfully:"
-          cat ./eks/manifests/nodeclass_updated.yaml
+          cat ./eks/manifests/nodeclass.yaml
 
       
       - name: Save Terraform Init Data and state config file for apply job
@@ -259,7 +259,7 @@ jobs:
         with:
           name: nodeclass-artifacts
           path: |
-            ${{ env.WORK_DIR }}/eks/manifests/nodeclass_updated.yaml
+            ${{ env.WORK_DIR }}/eks/manifests/nodeclass.yaml
 
 
   manifests-deployment:
