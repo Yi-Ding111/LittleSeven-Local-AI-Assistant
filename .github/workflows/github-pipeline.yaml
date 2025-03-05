@@ -219,12 +219,7 @@ jobs:
       - name: Update NodeClass with Terraform Outputs
         run: |
           cd ${{ env.WORK_DIR }}
-          terraform output -json private_subnet_ids 
-
-      - name: Update NodeClass with Terraform Outputs
-        run: |
-          # read Terraform output
-          cd ${{ env.WORK_DIR }}
+          # terraform output -json private_subnet_ids 
           SUBNET_IDS_JSON=$(terraform output -json private_subnet_ids)
 
           if [ -z "$SUBNET_IDS_JSON" ] || [ "$SUBNET_IDS_JSON" == "null" ]; then
@@ -232,26 +227,28 @@ jobs:
             exit 1
           fi
 
-          SUBNET_ID_1=$(echo "$SUBNET_IDS_JSON" | sed -E 's/^\["([^"]+)",.*$/\1/')
-          SUBNET_ID_2=$(echo "$SUBNET_IDS_JSON" | sed -E 's/^.*,"([^"]+)"\]$/\1/')
+          $(echo "$SUBNET_IDS_JSON" | sed -E 's/^\["([^"]+)",.*$/\1/')
+
+      - name: Update NodeClass with Terraform Outputs
+        run: |
+          cd ${{ env.WORK_DIR }}
+
+          SUBNET_IDS=$(terraform output -raw private_subnet_ids)
+          SUBNET_IDS_CLEAN=$(echo "$SUBNET_IDS" | tr -d '[]"')  # 清理 JSON 格式符号
+          IFS=', ' read -ra SUBNET_ARRAY <<< "$SUBNET_IDS_CLEAN"
+          SUBNET_ID_1="${SUBNET_ARRAY[0]}"
+          SUBNET_ID_2="${SUBNET_ARRAY[1]}"
 
           SECURITY_GROUP_ID=$(terraform output -raw eks_cluster_sg_id)
+
           NODE_ROLE="${{ env.EKS_NODE_ROLE }}"
 
-          echo "✅ Extracted values:"
-          echo "SUBNET_ID_1=$SUBNET_ID_1"
-          echo "SUBNET_ID_2=$SUBNET_ID_2"
-          echo "SECURITY_GROUP_ID=$SECURITY_GROUP_ID"
-          echo "NODE_ROLE=$NODE_ROLE"
+          sed -i "s|__SUBNET_ID_1__|$SUBNET_ID_1|g" ./eks/manifests/nodeclass.yaml
+          sed -i "s|__SUBNET_ID_2__|$SUBNET_ID_2|g" ./eks/manifests/nodeclass.yaml
+          sed -i "s|__SECURITY_GROUP_ID__|$SECURITY_GROUP_ID|g" ./eks/manifests/nodeclass.yaml
+          sed -i "s|__EKS_NODE_ROLE__|$NODE_ROLE|g" ./eks/manifests/nodeclass.yaml
 
-
-          # replace NodeClass file's placeholders
-          sed -i "s#__SUBNET_ID_1__#$SUBNET_ID_1#g" ./eks/manifests/nodeclass.yaml
-          sed -i "s#__SUBNET_ID_2__#$SUBNET_ID_2#g" ./eks/manifests/nodeclass.yaml
-          sed -i "s#__SECURITY_GROUP_ID__#$SECURITY_GROUP_ID#g" ./eks/manifests/nodeclass.yaml
-          sed -i "s#__EKS_NODE_ROLE__#$NODE_ROLE#g" ./eks/manifests/nodeclass.yaml
-
-          echo "NodeClass updated successfully:"
+          echo "Updated NodeClass:"
           cat ./eks/manifests/nodeclass.yaml
 
       
