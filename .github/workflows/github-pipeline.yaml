@@ -294,6 +294,6 @@ jobs:
         run: |
           cd ${{ env.WORK_DIR }}/eks
           . deploy.sh
-        with:
+        env:
           AWS_REGION: ${{ vars.REGION }}
 
