@@ -1,0 +1,46 @@
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: gpu-nodepool
+spec:
+  template: # 这是 Pod 模板，用于 Kubernetes 控制器（如 Deployment, Job）在创建 Pod 时使用
+    metadata:  # 作用于 Pod，用于定义 Pod 的元数据
+      labels:
+        billing-team: my-team
+        # node-type: gpu
+    spec:
+      nodeClassRef:
+        group: eks.amazonaws.com
+        kind: NodeClass
+        name: gpu-nodeclass
+      taints: # 用于 限制某些 Pod 被调度到该节点. 污点用于防止 Pod 被调度到该node，除非 Pod 能够容忍这个污点（通过 tolerations）。 该污点 确保只有能使用 GPU 的 Pod（带 tolerations: nvidia.com/gpu）才能调度到这个节点。
+        - key: "nvidia.com/gpu" # 标记节点与 NVIDIA GPU 相关的属性，通常用来指示该node用于 GPU 任务。 这个 key 说明 该节点是 GPU 计算节点
+          value: "Exists" # 这里的 Exists 不是普通值，而是一种 特殊匹配模式。表示 这个污点不需要具体的 value，只要有这个 key（nvidia.com/gpu）就生效。
+          effect: "NoSchedule" # 指定 污点的影响方式. NoSchedule：除非 Pod 有 匹配的 Toleration，否则 Kubernetes 不会调度 这个 Pod 到该节点。
+      requirements:
+        - key: "eks.amazonaws.com/instance-category"
+          operator: In
+          values: ["g"]
+        - key: "eks.amazonaws.com/instance-family"
+          operator: In
+          values: ["g4dn","g5","g6"]
+        - key: "eks.amazonaws.com/instance-size"
+          operator: In
+          values: ["xlarge", "2xlarge", "12xlarge"]
+        - key: "topology.kubernetes.io/zone"
+          operator: In
+          values: ["ap-southeast-2a", "ap-southeast-2b", "ap-southeast-2c"]
+        - key: "kubernetes.io/arch"
+          operator: In
+          values: ["amd64"]
+        - key: "karpenter.sh/capacity-type"
+          operator: In
+          values: ["spot", "on-demand"]
+  limits:
+    nvidia.com/gpu: 2
+    cpu: 24
+    memory: 30Gi
+
+
+
+
