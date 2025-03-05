@@ -234,9 +234,16 @@ jobs:
 
           SUBNET_ID_1=$(echo "$SUBNET_IDS_JSON" | sed -E 's/^\["([^"]+)",.*$/\1/')
           SUBNET_ID_2=$(echo "$SUBNET_IDS_JSON" | sed -E 's/^.*,"([^"]+)"\]$/\1/')
-          
+
           SECURITY_GROUP_ID=$(terraform output -raw eks_cluster_sg_id)
           NODE_ROLE="${{ env.EKS_NODE_ROLE }}"
+
+          echo "✅ Extracted values:"
+          echo "SUBNET_ID_1=$SUBNET_ID_1"
+          echo "SUBNET_ID_2=$SUBNET_ID_2"
+          echo "SECURITY_GROUP_ID=$SECURITY_GROUP_ID"
+          echo "NODE_ROLE=$NODE_ROLE"
+
 
           # replace NodeClass file's placeholders
           sed -i "s#__SUBNET_ID_1__#$SUBNET_ID_1#g" ./eks/manifests/nodeclass.yaml
