@@ -210,16 +210,16 @@ jobs:
         run: |
           cd ${{ env.WORK_DIR }}
           terraform init -backend-config="./state.config"
-          
-      - name: Install jq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
 
-      # - name: Update NodeClass with Terraform Outputs
+      # - name: Install jq
       #   run: |
-      #     cd ${{ env.WORK_DIR }}
-      #     terraform output -json
+      #     sudo apt-get update
+      #     sudo apt-get install -y jq
+
+      - name: Update NodeClass with Terraform Outputs
+        run: |
+          cd ${{ env.WORK_DIR }}
+          terraform output -json private_subnet_ids | jq -r '.[0]'
 
       - name: Update NodeClass with Terraform Outputs
         run: |
