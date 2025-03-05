@@ -89,6 +89,11 @@ jobs:
       #     echo "Checking state.config in ${{ env.WORK_DIR }}"
       #     ls -l ${{ env.WORK_DIR }}/state.config
 
+      # Temporarily modify the .gitignore so that terraform allows it to not be ignored
+      - name: Allow Upload of .terraform/
+        run: |
+          echo "!.terraform/" >> .gitignore
+
       - name: Initialize Terraform
         run: |
           cd ${{ env.WORK_DIR }}
