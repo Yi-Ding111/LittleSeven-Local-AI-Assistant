@@ -211,34 +211,34 @@ jobs:
           cd ${{ env.WORK_DIR }}
           terraform init -backend-config="./state.config"
 
-      # - name: Update NodeClass with Terraform Outputs
-      #   run: |
-      #     cd ${{ env.WORK_DIR }}
-      #     terraform output -json
-
       - name: Update NodeClass with Terraform Outputs
         run: |
           cd ${{ env.WORK_DIR }}
+          terraform output -json private_subnet_ids
 
-          SUBNET_ID_1=$(terraform output -json private_subnet_ids | jq -r '.value[0]')
-          SUBNET_ID_2=$(terraform output -json private_subnet_ids | jq -r '.value[1]')
+      # - name: Update NodeClass with Terraform Outputs
+      #   run: |
+      #     cd ${{ env.WORK_DIR }}
 
-          SECURITY_GROUP_ID=$(terraform output -raw eks_cluster_sg_id)
+      #     SUBNET_ID_1=$(terraform output -json private_subnet_ids | jq -r '.value[0]')
+      #     SUBNET_ID_2=$(terraform output -json private_subnet_ids | jq -r '.value[1]')
 
-          NODE_ROLE="${{ env.EKS_NODE_ROLE }}"
+      #     SECURITY_GROUP_ID=$(terraform output -raw eks_cluster_sg_id)
 
-          sed -i "s#__SUBNET_ID_1__#$SUBNET_ID_1#g" ./eks/manifests/nodeclass.yaml
-          sed -i "s#__SUBNET_ID_2__#$SUBNET_ID_2#g" ./eks/manifests/nodeclass.yaml
-          sed -i "s#__SECURITY_GROUP_ID__#$SECURITY_GROUP_ID#g" ./eks/manifests/nodeclass.yaml
-          sed -i "s#__EKS_NODE_ROLE__#$NODE_ROLE#g" ./eks/manifests/nodeclass.yaml
+      #     NODE_ROLE="${{ env.EKS_NODE_ROLE }}"
 
-          echo "Updated NodeClass:"
-          cat ./eks/manifests/nodeclass.yaml
+      #     sed -i "s#__SUBNET_ID_1__#$SUBNET_ID_1#g" ./eks/manifests/nodeclass.yaml
+      #     sed -i "s#__SUBNET_ID_2__#$SUBNET_ID_2#g" ./eks/manifests/nodeclass.yaml
+      #     sed -i "s#__SECURITY_GROUP_ID__#$SECURITY_GROUP_ID#g" ./eks/manifests/nodeclass.yaml
+      #     sed -i "s#__EKS_NODE_ROLE__#$NODE_ROLE#g" ./eks/manifests/nodeclass.yaml
+
+      #     echo "Updated NodeClass:"
+      #     cat ./eks/manifests/nodeclass.yaml
 
       
-      - name: Save Terraform Init Data and state config file for apply job
-        uses: actions/upload-artifact@v4
-        with:
-          name: nodeclass-artifacts
-          path: |
-            ${{ env.WORK_DIR }}/eks/manifests/nodeclass.yaml
+      # - name: Save Terraform Init Data and state config file for apply job
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: nodeclass-artifacts
+      #     path: |
+      #       ${{ env.WORK_DIR }}/eks/manifests/nodeclass.yaml
