@@ -106,6 +106,13 @@ jobs:
         env:
           TF_VAR_region: ${{ vars.REGION }}
 
+      # debug
+      - name: Debug Terraform Lock File
+        run: |
+          echo "Checking for .terraform.lock.hcl file"
+          ls -l ${{ env.WORK_DIR }}/.terraform.lock.hcl || echo "File not found!"
+
+
       - name: Save Terraform Init Data and state config file for apply job
         uses: actions/upload-artifact@v4
         with:
