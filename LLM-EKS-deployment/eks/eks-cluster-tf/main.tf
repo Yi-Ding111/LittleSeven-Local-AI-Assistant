@@ -61,15 +61,15 @@ resource "aws_eks_addon" "vpc_cni" {
   addon_name   = "vpc-cni"
 }
 
-resource "aws_eks_addon" "logging" {
-  cluster_name = aws_eks_cluster.eks_auto_demo.name
-  addon_name   = "amazon-cloudwatch-observability"
-}
+# resource "aws_eks_addon" "logging" {
+#   cluster_name = aws_eks_cluster.eks_auto_demo.name
+#   addon_name   = "amazon-cloudwatch-observability"
+# }
 
-resource "aws_eks_addon" "metrics_server" {
-  cluster_name = aws_eks_cluster.eks_auto_demo.name
-  addon_name   = "metrics-server"
-}
+# resource "aws_eks_addon" "metrics_server" {
+#   cluster_name = aws_eks_cluster.eks_auto_demo.name
+#   addon_name   = "metrics-server"
+# }
 
 
 
