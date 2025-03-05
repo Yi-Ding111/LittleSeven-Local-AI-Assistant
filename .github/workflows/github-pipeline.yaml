@@ -185,6 +185,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
+          terraform_wrapper: false
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -225,6 +226,9 @@ jobs:
 
           terraform output -json private_subnet_ids > subnet_ids.json
           cat subnet_ids.json | jq -r '.[0]'
+
+          SECURITY_GROUP_ID=$(terraform output -raw eks_cluster_sg_id | awk '{print $1}')
+          echo "Security Group ID: $SECURITY_GROUP_ID"
 
       # - name: Update NodeClass with Terraform Outputs
       #   run: |
