@@ -19,8 +19,7 @@ on:
 
 # permissions:
 #   id-token: write
-#   contents: read 
-
+#   contents: read
 
 env:
   EKS_NODE_ROLE: "eksAutoModeNodeRole-YiDing"
@@ -80,15 +79,15 @@ jobs:
           echo "WORK_DIR: ${{ env.WORK_DIR }}"
           chmod +x ${{ env.WORK_DIR }}/.scripts/setup_state_config.sh
           ${{ env.WORK_DIR }}/.scripts/setup_state_config.sh
-        env: 
+        env:
           S3_BUCKET: ${{ vars.S3_BUCKET }}
           AWS_REGION: ${{ vars.REGION }}
 
-      # debug
-      - name: Debug state.config file
-        run: |
-          echo "Checking state.config in ${{ env.WORK_DIR }}"
-          ls -l ${{ env.WORK_DIR }}/state.config
+      # # debug
+      # - name: Debug state.config file
+      #   run: |
+      #     echo "Checking state.config in ${{ env.WORK_DIR }}"
+      #     ls -l ${{ env.WORK_DIR }}/state.config
 
       - name: Initialize Terraform
         run: |
@@ -102,15 +101,14 @@ jobs:
         env:
           TF_VAR_region: ${{ vars.REGION }}
 
-
       - name: Save Terraform Init Data and state config file for apply job
         uses: actions/upload-artifact@v4
         with:
           name: terraform-artifacts
           path: |
-            ${{ env.WORK_DIR }}/.terraform
+            ${{ env.WORK_DIR }}/.terraform/
             ${{ env.WORK_DIR }}/state.config
-
+            ${{ env.WORK_DIR }}/.terraform.lock.hcl
 
   # terraform-apply:
   #   name: "Terraform Apply Or Destroy"
@@ -123,14 +121,11 @@ jobs:
   #     - name: Apply or Destroy Terraform Changes
   #       run: |
   #         cd $WORK_DIR
-  #         if [ "${{ github.event.inputs.runScope }}" == "LLM destroy" ]; then
+  #         if [ "${{ github.event.inputs.runScope }}" == "Destroy" ]; then
   #           terraform destroy --auto-approve
   #         else
   #           terraform apply --auto-approve
   #         fi
-
-
-
 
   # terraform-output:
   #   name: "Process Terraform Outputs & Update NodeClass"
