@@ -221,6 +221,7 @@ jobs:
           cd ${{ env.WORK_DIR }}
           terraform output -json private_subnet_ids 
           terraform output -raw eks_cluster_sg_id
+          echo "Security Group ID: $(terraform output -raw eks_cluster_sg_id)"
 
       # - name: Update NodeClass with Terraform Outputs
       #   run: |
