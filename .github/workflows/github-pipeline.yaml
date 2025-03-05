@@ -5,18 +5,17 @@ on:
     branches:
       - master
       - yiding
-  # trigger pipeline manually
+  # trigger manually
   workflow_dispatch:
     inputs:
       runScope:
         type: choice
         description: "LLM deployment or destroy"
+        required: true
+        default: "LLM deployment"
         options:
           - "LLM deployment"
           - "LLM destroy"
-        default: "LLM deployment"
-        required: true
-
 env:
   EKS_NODE_ROLE: "eksAutoModeNodeRole-YiDing"
   WORK_DIR: "${{ github.workspace }}/LLM-EKS-deployment"
