@@ -291,7 +291,7 @@ jobs:
           path: ${{ env.WORK_DIR }}/eks/manifests/
     
       - name: manifest-run
-        uses: |
+        run: |
           cd ${{ env.WORK_DIR }}/eks
           . deploy.sh
         with:
