@@ -17,9 +17,9 @@ on:
           - "Deployment"
           - "Destroy"
 
-permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read 
+# permissions:
+#   id-token: write
+#   contents: read 
 
 
 env:
@@ -77,8 +77,9 @@ jobs:
 
       - name: Setup Terraform State Config file
         run: |
-          chmod +x $WORK_DIR/.scripts/setup_state_config.sh
-          $WORK_DIR/.scripts/setup_state_config.sh
+          echo "WORK_DIR: ${{ env.WORK_DIR }}"
+          chmod +x ${{ env.WORK_DIR }}/.scripts/setup_state_config.sh
+          ${{ env.WORK_DIR }}/.scripts/setup_state_config.sh
         env: 
           S3_BUCKET: ${{ vars.S3_BUCKET }}
           AWS_REGION: ${{ vars.REGION }}
@@ -86,17 +87,17 @@ jobs:
       # debug
       - name: Debug state.config file
         run: |
-          echo "Checking state.config in $WORK_DIR"
-          ls -l $WORK_DIR/state.config
+          echo "Checking state.config in ${{ env.WORK_DIR }}"
+          ls -l ${{ env.WORK_DIR }}/state.config
 
       - name: Initialize Terraform
         run: |
-          cd $WORK_DIR
+          cd ${{ env.WORK_DIR }}
           terraform init -backend-config="./state.config"
 
       - name: Terraform Plan
         run: |
-          cd $WORK_DIR
+          cd ${{ env.WORK_DIR }}
           terraform plan
         env:
           TF_VAR_region: ${{ vars.REGION }}
@@ -107,7 +108,7 @@ jobs:
         with:
           name: terraform-artifacts
           path: |
-            $WORK_DIR/.terraform
+            ${{ env.WORK_DIR }}/.terraform
             $WORK_DIR/state.config
 
 
