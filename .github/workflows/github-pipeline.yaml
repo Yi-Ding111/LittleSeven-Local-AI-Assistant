@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - master
+      # - master
       - yiding
   workflow_dispatch:
     inputs:
