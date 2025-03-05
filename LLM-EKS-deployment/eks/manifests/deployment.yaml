@@ -13,11 +13,11 @@ spec:
       labels:
         app.kubernetes.io/name: ollama-llm
     spec:
-      tolerations: # 这个 tolerations 规则允许 Pod 忽略 nvidia.com/gpu 的 NoSchedule 影响，从而可以调度到 GPU 节点上。 tolerations 允许 Pod 调度到 带有 nvidia.com/gpu 污点的节点
+      tolerations: # This tolerations rule allows the Pod to ignore the NoSchedule effect of nvidia.com/gpu and be scheduled to a GPU node. Tolerations allow the Pod to be scheduled to a node with the nvidia.com/gpu taint
         - key: "nvidia.com/gpu"
           operator: "Exists"
           effect: "NoSchedule"
-      # nodeSelector:  # 让 Pod 只运行在符合条件的 Node 上。表示这个 Pod 只能调度到 带有 node-type=gpu 标签的 Node 上。如果 Node 没有这个标签，Pod 就不会被调度到该 Node 上。
+      # nodeSelector:  # Let the Pod run only on qualified Nodes. This means that the Pod can only be scheduled to Nodes with the label node-type=gpu. If the Node does not have this label, the Pod will not be scheduled to the Node.
       #   node-type: gpu
       containers:
         - image: ollama/ollama:latest
@@ -25,12 +25,12 @@ spec:
           name: ollama-llm
           ports:
             - containerPort: 11434
-          command: ["/bin/sh", "-c"] # -c表示把后面的字符串之形成cml
+          command: ["/bin/sh", "-c"] 
           args:
             - |
               ollama serve &  
               sleep 5  
-              ollama pull deepseek-r1:1.5b  
+              ollama pull deepseek-r1:8b  
               wait 
           volumeMounts:
             - name: ollama-storage
@@ -39,11 +39,11 @@ spec:
             limits:
               cpu: "4"
               memory: 16G
-              nvidia.com/gpu: 1  # 🚀 申请 1 个 GPU
+              nvidia.com/gpu: 1 
             requests:
               cpu: "2"
               memory: 8G
-              nvidia.com/gpu: 1  # 🚀 确保至少分配 1 个 GPU
+              nvidia.com/gpu: 1  
       volumes:
         - name: ollama-storage
           persistentVolumeClaim:
@@ -51,49 +51,3 @@ spec:
 
 
 
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   namespace: ollama
-#   name: ollama-deployment
-# spec:
-#   replicas: 2
-#   selector:
-#     matchLabels:
-#       app.kubernetes.io/name: ollama-llm
-#   template:
-#     metadata:
-#       labels:
-#         app.kubernetes.io/name: ollama-llm
-#     spec:
-#       tolerations:
-#         - key: "nvidia.com/gpu"
-#           operator: "Exists"
-#           effect: "NoSchedule"
-#       nodeSelector:
-#         node-type: gpu  # 仅需一个标签
-#       containers:
-#         - image: ollama/ollama:latest
-#           imagePullPolicy: Always
-#           name: ollama-llm
-#           ports:
-#             - containerPort: 11434
-#           command: ["/bin/sh", "-c"]
-#           args:
-#             - |
-#               ollama serve &  
-#               sleep 5  
-#               ollama pull deepseek-r1:8b  
-#               wait 
-#           resources:  # 必须声明 GPU 请求
-#             limits:
-#               nvidia.com/gpu: 1
-#             requests:
-#               nvidia.com/gpu: 1
-#           volumeMounts:
-#             - name: ollama-storage
-#               mountPath: /root/.ollama
-#       volumes:
-#         - name: ollama-storage
-#           persistentVolumeClaim:
-#             claimName: ollama-pvc
