@@ -7,15 +7,15 @@ on:
       - yiding
   # trigger manually
   workflow_dispatch:
-    # inputs:
-    #   # runScope:
-    #   #   type: choice
-    #   #   description: "LLM deployment or destroy"
-    #   #   required: true
-    #   #   default: "LLM deployment"
-    #   #   options:
-    #   #     - "LLM deployment"
-    #   #     - "LLM destroy"
+    inputs:
+      runScope:
+        type: choice
+        description: "LLM deployment or destroy"
+        required: true
+        default: "Deployment"
+        options:
+          - "Deployment"
+          - "Destroy"
 
 permissions:
   id-token: write # This is required for requesting the JWT
