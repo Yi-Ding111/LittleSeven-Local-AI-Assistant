@@ -1,4 +1,8 @@
 on:
+  push:
+    branches:
+      - master
+      - yiding
   workflow_dispatch:
     inputs:
       logLevel:
