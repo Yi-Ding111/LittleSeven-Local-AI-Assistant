@@ -1,10 +1,10 @@
 name: LLM deployemnt into EKS Auto Mode
 
 on:
-  push:
-    branches:
-      - master
-      - yiding
+  # push:
+  #   branches:
+  #     - master
+  #     - yiding
   # trigger manually
   workflow_dispatch:
     inputs:
