@@ -11,3 +11,5 @@ STT/whisper_model/
 langc_branch/db
 langc_rag/db
 laptop_operation/db
+
+.terraform/

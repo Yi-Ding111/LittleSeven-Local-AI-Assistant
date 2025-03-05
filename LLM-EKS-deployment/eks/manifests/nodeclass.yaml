@@ -1,0 +1,77 @@
+apiVersion: eks.amazonaws.com/v1
+kind: NodeClass
+metadata:
+  name: gpu-nodeclass
+spec:
+
+  # Required: Name of IAM Role for Nodes
+  role: "__EKS_NODE_ROLE__" # place holder
+  # role: "eksAutoModeNodeRole-YiDing"
+
+  # Required: Subnet selection for node placement
+  subnetSelectorTerms:
+    # - tags:
+    #     Name: "<tag-name>"
+    #     kubernetes.io/role/internal-elb: "1"
+    # Alternative using direct subnet ID
+    # - id: "subnet-034358e8d6a8c72e6"
+    # - id: "subnet-0130c3fea259198b4"
+    - id: "__SUBNET_ID_1__"
+    - id: "__SUBNET_ID_2__"
+
+  # Required: Security group selection for nodes
+  securityGroupSelectorTerms:
+    # - tags:
+    #     Name: "eks-cluster-node-sg"
+    # Alternative approaches:
+    # - id: "sg-0788210ac7ad1d26f"
+    - id: "__SECURITY_GROUP_ID__"
+    # - name: "eks-cluster-node-security-group"
+
+  # Optional: Configure SNAT policy (defaults to Random)
+  snatPolicy: Random  # or Disabled
+
+  # Optional: Network policy configuration (defaults to DefaultAllow)
+  networkPolicy: DefaultAllow  # or DefaultDeny
+
+  # Optional: Network policy event logging (defaults to Disabled)
+  networkPolicyEventLogs: Disabled  # or Enabled
+
+  # Optional: Configure ephemeral storage (shown with default values)
+  ephemeralStorage:
+    size: "30Gi"    # Range: 1-59000Gi or 1-64000G or 1-58Ti or 1-64T
+    iops: 3000      # Range: 3000-16000
+    throughput: 125 # Range: 125-1000
+
+  # IAM role to use for EC2 instance role
+  # If unspecified, EKS will create a role
+  # If specified, role requires access entry described above
+  # would use the same role arn with default nodeclass
+  # role: arn:aws:iam::724193151683:role/AmazonEKSAutoClusterRole-YDtest
+
+  # Optional: Additional EC2 tags
+  # tags:
+  #   node-type: gpu # 这里设置 GPU 标签，Pod 的 nodeSelector 可以匹配
+    # Environment: "production"
+    # Team: "platform"
+
+
+
+# apiVersion: eks.amazonaws.com/v1
+# kind: NodeClass
+# metadata:
+#   name: pool-default
+# spec:
+#   ephemeralStorage:
+#     iops: 3000
+#     size: 50Gi
+#     throughput: 125
+#   networkPolicy: DefaultAllow
+#   networkPolicyEventLogs: Disabled
+#   role: AmazonEKSAutoNodeRole
+#   securityGroupSelectorTerms:
+#   - id: sg-03ba3b4ad89992c7a
+#   snatPolicy: Random
+#   subnetSelectorTerms:
+#   - id: subnet-0c2cd400ef0d90a66
+#   - id: subnet-00f0984e0fc86cf0a
