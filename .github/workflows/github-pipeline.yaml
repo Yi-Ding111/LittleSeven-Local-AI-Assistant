@@ -109,7 +109,7 @@ jobs:
           name: terraform-artifacts
           path: |
             ${{ env.WORK_DIR }}/.terraform
-            $WORK_DIR/state.config
+            ${{ env.WORK_DIR }}/state.config
 
 
   # terraform-apply:
