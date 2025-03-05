@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - yiding
   # trigger pipeline manually
   workflow_dispatch:
     inputs:
