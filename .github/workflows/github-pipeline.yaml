@@ -223,6 +223,9 @@ jobs:
           terraform output -raw eks_cluster_sg_id
           echo "Security Group ID: $(terraform output -raw eks_cluster_sg_id)"
 
+          terraform output -json private_subnet_ids > subnet_ids.json
+          cat subnet_ids.json | jq -r '.[0]'
+
       # - name: Update NodeClass with Terraform Outputs
       #   run: |
       #     # read Terraform output
