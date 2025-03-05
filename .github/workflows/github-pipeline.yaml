@@ -125,6 +125,7 @@ jobs:
     name: "Terraform Apply Or Destroy"
     runs-on: ubuntu-latest
     needs: terraform-plan
+    environment: LLM-EKS
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
