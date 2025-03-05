@@ -1,10 +1,10 @@
 name: LLM deployemnt into EKS Auto Mode
 
 on:
-  # push:
-  #   branches:
-  #     - master
-  #     - yiding
+  push:
+    branches:
+      - master
+      - yiding
   # trigger manually
   workflow_dispatch:
     inputs:
@@ -16,6 +16,12 @@ on:
         options:
           - "LLM deployment"
           - "LLM destroy"
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read 
+
+
 env:
   EKS_NODE_ROLE: "eksAutoModeNodeRole-YiDing"
   WORK_DIR: "${{ github.workspace }}/LLM-EKS-deployment"
