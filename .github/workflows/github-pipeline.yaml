@@ -185,7 +185,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
-          terraform_wrapper: false
+          terraform_wrapper: false # this key is very important if using tf outputs in pipeline *****
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -251,7 +251,7 @@ jobs:
           sed -i "s#__EKS_NODE_ROLE__#$NODE_ROLE#g" ./eks/manifests/nodeclass.yaml
 
           echo "NodeClass updated successfully:"
-          cat ./eks/manifests/nodeclass.yaml
+          cat ./eks/manifests/nodeclass_updated.yaml
 
       
       - name: Save Terraform Init Data and state config file for apply job
@@ -259,4 +259,41 @@ jobs:
         with:
           name: nodeclass-artifacts
           path: |
-            ${{ env.WORK_DIR }}/eks/manifests/nodeclass.yaml
+            ${{ env.WORK_DIR }}/eks/manifests/nodeclass_updated.yaml
+
+
+  manifests-deployment:
+    name: "deploy k8s manifests into EKS Auto Mode cluster"
+    runs-on: ubuntu-latest
+    needs: terraform-output
+    environment: LLM-EKS
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }}
+          aws-region: ${{ vars.REGION }}
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+
+      - name: Restore nodeclass(updated) file
+        uses: actions/download-artifact@v4
+        with:
+          name: nodeclass-artifacts
+          path: ${{ env.WORK_DIR }}/eks/manifests/
+    
+      - name: manifest-run
+        uses: |
+          cd ${{ env.WORK_DIR }}/eks
+          . deploy.sh
+        with:
+          AWS_REGION: ${{ vars.REGION }}
+

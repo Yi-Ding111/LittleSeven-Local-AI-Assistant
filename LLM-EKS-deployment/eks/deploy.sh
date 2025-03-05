@@ -3,12 +3,13 @@
 # exit immediately if an error occurs
 set -e
 
-echo "🚀 Applying Kubernetes manifests..."
+echo "Applying Kubernetes manifests..."
 
-aws eks --region ap-southeast-2 update-kubeconfig --name eks-auto-demo
+aws eks --region ${AWS_REGION} update-kubeconfig --name eks-auto-demo
 
 # Apply Kubernetes resources one by one
-kubectl apply -f ./manifests/nodeclass.yaml
+# kubectl apply -f ./manifests/nodeclass.yaml
+kubectl apply -f ./manifests/nodeclass_updated.yaml
 kubectl apply -f ./manifests/nodepool.yaml
 kubectl apply -f ./manifests/namespace.yaml
 kubectl apply -f ./manifests/storage-class.yaml
